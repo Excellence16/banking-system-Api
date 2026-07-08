@@ -1,4 +1,11 @@
 package com.excellence.bankingsystemapi.repository;
 
-public class TransactionRepository {
+import com.excellence.bankingsystemapi.model.Transaction;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+
+    Optional<Transaction> findByReference(String reference);
 }

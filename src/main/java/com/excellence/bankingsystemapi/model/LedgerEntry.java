@@ -5,7 +5,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ledger_entries")
+@Table(name = "ledger_entries",
+indexes = {
+        @Index(name = "idx_ledger_account",columnList = "account_id"),
+        @Index(name = "idx_ledger_transaction",columnList = "transaction_id"),
+        @Index(name = "idx_ledger_created_at",columnList = "created_at")
+})
+
 @Getter
 @Setter
 @NoArgsConstructor
