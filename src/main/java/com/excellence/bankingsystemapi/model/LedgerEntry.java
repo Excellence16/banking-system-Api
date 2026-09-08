@@ -1,4 +1,5 @@
 package com.excellence.bankingsystemapi.model;
+import com.excellence.bankingsystemapi.common.enums.EntryType;
 import  jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -38,7 +39,10 @@ public class LedgerEntry {
     @Column(nullable = false)
     private EntryType entryType;
 
-    @Column( precision = 19, scale =2)
+    @Column(nullable = false,precision = 19,scale = 2)
+    private BigDecimal balanceBefore;
+
+    @Column(nullable = false, precision = 19, scale =2)
     private BigDecimal balanceAfter;
 
     @Column(nullable = false, updatable = false)

@@ -1,5 +1,7 @@
 package com.excellence.bankingsystemapi.model;
 
+import com.excellence.bankingsystemapi.common.enums.TransactionStatus;
+import com.excellence.bankingsystemapi.common.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -36,6 +38,14 @@ public class Transaction {
     @Column(nullable = false)
     private TransactionType transactionType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_account_id")
+    private Account sourceAccount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destination_account_id")
+    private Account destinationAccount;
+
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
@@ -43,6 +53,7 @@ public class Transaction {
    @Column(length = 255)
     private String description;
 
+     @Builder.Default
     @OneToMany(mappedBy = "transaction")
     private List<LedgerEntry> ledgerEntries  = new ArrayList<>();
 
