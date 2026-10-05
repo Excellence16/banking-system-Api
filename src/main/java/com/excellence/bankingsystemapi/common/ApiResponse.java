@@ -1,4 +1,4 @@
-package com.excellence.bankingsystemapi.customer.dto.response;
+package com.excellence.bankingsystemapi.common;
 
 import com.excellence.bankingsystemapi.exceptions.global.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;

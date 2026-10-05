@@ -1,56 +1,44 @@
 package com.excellence.bankingsystemapi.customer.service;
 
+import com.excellence.bankingsystemapi.common.PageResponse;
 import com.excellence.bankingsystemapi.customer.dto.request.CreateCustomerRequestDTO;
 import com.excellence.bankingsystemapi.customer.dto.request.CustomerSearchRequestDTO;
 import com.excellence.bankingsystemapi.customer.dto.request.UpdateCustomerRequestDTO;
 import com.excellence.bankingsystemapi.customer.dto.response.CustomerResponseDTO;
-import com.excellence.bankingsystemapi.customer.dto.response.PageResponse;
 
 public interface CustomerService {
 
     /**
      * Creates a new customer.
      */
-    CustomerResponseDTO createCustomer(
-            CreateCustomerRequestDTO request
-    );
+    CustomerResponseDTO createCustomer(CreateCustomerRequestDTO request);
 
     /**
      * Updates mutable customer information.
      */
-    CustomerResponseDTO updateCustomer(
-            Long customerId,
-            UpdateCustomerRequestDTO request
-    );
+    CustomerResponseDTO updateCustomer(Long customerId,
+            UpdateCustomerRequestDTO request);
 
     /**
      * Retrieves a customer by database ID.
      */
-    CustomerResponseDTO getCustomerById(
-            Long customerId
-    );
+    CustomerResponseDTO getCustomerById(Long customerId);
 
     /**
      * Retrieves a customer by customer number.
      */
-    CustomerResponseDTO getCustomerByCustomerNumber(
-            String customerNumber
-    );
+    CustomerResponseDTO getCustomerByCustomerNumber(String customerNumber);
 
     /**
      * Searches customers using filtering,
      * sorting and pagination.
      */
-    PageResponse<CustomerResponseDTO> searchCustomers(
-            CustomerSearchRequestDTO request
-    );
+    PageResponse<CustomerResponseDTO> searchCustomers(CustomerSearchRequestDTO request);
 
     /**
      * Soft deletes (deactivates) a customer.
      */
-    void deactivateCustomer(
-            Long customerId
-    );
+    void deactivateCustomer(Long customerId);
 
 }
 

@@ -1,31 +1,43 @@
 package com.excellence.bankingsystemapi.transaction.dto.response;
 
-import com.excellence.bankingsystemapi.common.enums.TransactionType;
-
+import com.excellence.bankingsystemapi.common.enums.TransactionChannel;
 import com.excellence.bankingsystemapi.common.enums.TransactionStatus;
-import lombok.*;
+import com.excellence.bankingsystemapi.common.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+public record TransactionResponseDTO(
 
-public class TransactionResponseDTO {
 
-    private String reference;
+        UUID transactionId,
 
-    private TransactionType transactionType;
+        String transactionReference,
 
-    private TransactionStatus transactionStatus;
+        TransactionType transactionType,
 
-    private BigDecimal amount;
+        TransactionStatus transactionStatus,
 
-    private String description;
+        BigDecimal amount,
 
-    private  LocalDateTime createdAt;
+        TransactionChannel channel,
 
+        //SENDER SNAPSHOT
+        String senderName,
+
+        String senderAccountNumber,
+
+        String senderBank,
+
+        //RECEIVER SNAPSHOT
+        String receiverName,
+
+        String receiverBank,
+
+        String receiverAccountNumber,
+
+        String description,
+
+        LocalDateTime createdAt) {
 }

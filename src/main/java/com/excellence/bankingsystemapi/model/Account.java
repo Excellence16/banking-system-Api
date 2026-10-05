@@ -19,12 +19,9 @@ import java.util.List;
 @Entity
 @Table(name = "accounts",
        indexes = {
-         @Index(name = "idx_customer_id", columnList = "customer_id"),
-
                @Index(name ="idx_customer_id", columnList =" customer_id "),
-
                @Index(name = "idx_account_type", columnList = "account_type"),
-               @Index(name = "account_status", columnList = "account_status")
+               @Index(name = "idx_account_status", columnList = "account_status")
 
        })
 @Getter
@@ -81,7 +78,7 @@ public class Account {
      * ETC.
      */
     @Enumerated(EnumType.STRING)
-    @Column(nullable  = false)
+    @Column(name="account_status", nullable  = false)
     private AccountStatus status;
 
     /**
@@ -140,8 +137,8 @@ public class Account {
     protected void onCreate() {
 
         LocalDateTime now =  LocalDateTime.now();
-       this.createdAt = now;
        this.updatedAt = now;
+       this.createdAt = now;
 
 
        if (status == null) {

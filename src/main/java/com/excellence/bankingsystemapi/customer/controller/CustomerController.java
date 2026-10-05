@@ -1,12 +1,12 @@
 package com.excellence.bankingsystemapi.customer.controller;
 
+import com.excellence.bankingsystemapi.common.ApiResponse;
+import com.excellence.bankingsystemapi.common.ApiResponseFactory;
+import com.excellence.bankingsystemapi.common.PageResponse;
 import com.excellence.bankingsystemapi.customer.dto.request.CreateCustomerRequestDTO;
 import com.excellence.bankingsystemapi.customer.dto.request.CustomerSearchRequestDTO;
 import com.excellence.bankingsystemapi.customer.dto.request.UpdateCustomerRequestDTO;
-import com.excellence.bankingsystemapi.customer.dto.response.ApiResponse;
-import com.excellence.bankingsystemapi.customer.dto.response.ApiResponseFactory;
 import com.excellence.bankingsystemapi.customer.dto.response.CustomerResponseDTO;
-import com.excellence.bankingsystemapi.customer.dto.response.PageResponse;
 import com.excellence.bankingsystemapi.customer.service.CustomerService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller responsible for customer management operations.
- *
+ * <p>
  * Handles:
  * - Customer creation
  * - Customer retrieval
  * - Customer search
  * - Customer updates
  * - Customer deactivation
- *
+ * <p>
  * All responses follow the standard ApiResponse wrapper.
  */
 @RestController
@@ -37,63 +37,49 @@ public class CustomerController {
     private final CustomerService customerService;
 
 
-
     /**
      * Creates a new customer.
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<CustomerResponseDTO>> createCustomer(
-            @Valid @RequestBody CreateCustomerRequestDTO request,
-            HttpServletRequest httpRequest
-    ) {
+    public ResponseEntity<ApiResponse<CustomerResponseDTO>> createCustomer(@Valid @RequestBody CreateCustomerRequestDTO request,
+            HttpServletRequest httpRequest) {
 
 
-        CustomerResponseDTO customer =
-                customerService.createCustomer(request);
+        CustomerResponseDTO customer = customerService.createCustomer(request);
 
 
-        ApiResponse<CustomerResponseDTO> response =
-                ApiResponseFactory.success(
-                        "Customer created successfully.",
-                        customer,
-                        HttpStatus.CREATED,
-                        httpRequest
-                );
+        ApiResponse<CustomerResponseDTO> response = ApiResponseFactory.success(
+                "Customer created successfully.",
+                customer,
+                HttpStatus.CREATED,
+                httpRequest);
 
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
 
 
     /**
      * Retrieves customer by database ID.
      */
     @GetMapping("/{customerId}")
-    public ResponseEntity<ApiResponse<CustomerResponseDTO>> getCustomerById(
-            @PathVariable Long customerId,
-            HttpServletRequest httpRequest
-    ) {
+    public ResponseEntity<ApiResponse<CustomerResponseDTO>> getCustomerById(@PathVariable Long customerId,
+            HttpServletRequest httpRequest) {
 
 
-        CustomerResponseDTO customer =
-                customerService.getCustomerById(customerId);
+        CustomerResponseDTO customer = customerService.getCustomerById(
+                customerId);
 
 
-        ApiResponse<CustomerResponseDTO> response =
-                ApiResponseFactory.success(
-                        "Customer retrieved successfully.",
-                        customer,
-                        HttpStatus.OK,
-                        httpRequest
-                );
+        ApiResponse<CustomerResponseDTO> response = ApiResponseFactory.success(
+                "Customer retrieved successfully.",
+                customer,
+                HttpStatus.OK,
+                httpRequest);
 
 
         return ResponseEntity.ok(response);
     }
-
 
 
     /**
@@ -102,31 +88,27 @@ public class CustomerController {
     @GetMapping("/customer-number/{customerNumber}")
     public ResponseEntity<ApiResponse<CustomerResponseDTO>> getCustomerByCustomerNumber(
             @PathVariable String customerNumber,
-            HttpServletRequest httpRequest
-    ) {
+            HttpServletRequest httpRequest) {
 
 
-        CustomerResponseDTO customer =
-                customerService.getCustomerByCustomerNumber(customerNumber);
+        CustomerResponseDTO customer = customerService.getCustomerByCustomerNumber(
+                customerNumber);
 
 
-        ApiResponse<CustomerResponseDTO> response =
-                ApiResponseFactory.success(
-                        "Customer retrieved successfully.",
-                        customer,
-                        HttpStatus.OK,
-                        httpRequest
-                );
+        ApiResponse<CustomerResponseDTO> response = ApiResponseFactory.success(
+                "Customer retrieved successfully.",
+                customer,
+                HttpStatus.OK,
+                httpRequest);
 
 
         return ResponseEntity.ok(response);
     }
 
 
-
     /**
      * Searches customers with:
-     *
+     * <p>
      * - Pagination
      * - Sorting
      * - Filtering
@@ -135,87 +117,69 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<CustomerResponseDTO>>> searchCustomers(
             @Valid CustomerSearchRequestDTO request,
-            HttpServletRequest httpRequest
-    ) {
+            HttpServletRequest httpRequest) {
 
 
-        PageResponse<CustomerResponseDTO> customers =
-                customerService.searchCustomers(request);
+        PageResponse<CustomerResponseDTO> customers = customerService.searchCustomers(
+                request);
 
 
-
-        ApiResponse<PageResponse<CustomerResponseDTO>> response =
-                ApiResponseFactory.success(
-                        "Customers retrieved successfully.",
-                        customers,
-                        HttpStatus.OK,
-                        httpRequest
-                );
+        ApiResponse<PageResponse<CustomerResponseDTO>> response = ApiResponseFactory.success(
+                "Customers retrieved successfully.",
+                customers,
+                HttpStatus.OK,
+                httpRequest);
 
 
         return ResponseEntity.ok(response);
     }
-
 
 
     /**
      * Updates customer information.
      */
     @PutMapping("/{customerId}")
-    public ResponseEntity<ApiResponse<CustomerResponseDTO>> updateCustomer(
-            @PathVariable Long customerId,
+    public ResponseEntity<ApiResponse<CustomerResponseDTO>> updateCustomer(@PathVariable Long customerId,
             @Valid @RequestBody UpdateCustomerRequestDTO request,
-            HttpServletRequest httpRequest
-    ) {
+            HttpServletRequest httpRequest) {
 
 
-        CustomerResponseDTO customer =
-                customerService.updateCustomer(
-                        customerId,
-                        request
-                );
+        CustomerResponseDTO customer = customerService.updateCustomer(customerId,
+                request);
 
 
-        ApiResponse<CustomerResponseDTO> response =
-                ApiResponseFactory.success(
-                        "Customer updated successfully.",
-                        customer,
-                        HttpStatus.OK,
-                        httpRequest
-                );
+        ApiResponse<CustomerResponseDTO> response = ApiResponseFactory.success(
+                "Customer updated successfully.",
+                customer,
+                HttpStatus.OK,
+                httpRequest);
 
 
         return ResponseEntity.ok(response);
     }
 
 
-
     /**
      * Deactivates customer using soft delete.
-     *
+     * <p>
      * Customer data remains available for:
      * - Audit
      * - Compliance
      * - Reporting
      */
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<ApiResponse<Void>> deactivateCustomer(
-            @PathVariable Long customerId,
-            HttpServletRequest httpRequest
-    ) {
+    public ResponseEntity<ApiResponse<Void>> deactivateCustomer(@PathVariable Long customerId,
+            HttpServletRequest httpRequest) {
 
 
         customerService.deactivateCustomer(customerId);
 
 
-
-        ApiResponse<Void> response =
-                ApiResponseFactory.success(
-                        "Customer deactivated successfully.",
-                        null,
-                        HttpStatus.OK,
-                        httpRequest
-                );
+        ApiResponse<Void> response = ApiResponseFactory.success(
+                "Customer deactivated successfully.",
+                null,
+                HttpStatus.OK,
+                httpRequest);
 
 
         return ResponseEntity.ok(response);

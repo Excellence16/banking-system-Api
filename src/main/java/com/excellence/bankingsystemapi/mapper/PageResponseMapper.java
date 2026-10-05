@@ -1,22 +1,22 @@
 package com.excellence.bankingsystemapi.mapper;
 
-import com.excellence.bankingsystemapi.customer.dto.response.PageResponse;
+import com.excellence.bankingsystemapi.common.PageResponse;
 import org.springframework.data.domain.Page;
 
 public class PageResponseMapper {
 
     private PageResponseMapper() {
         throw new UnsupportedOperationException(
-                "Utility class cannot be instantiated"
-        );
+                "Utility class cannot be instantiated");
     }
 
     /**
-    * Converts a Spring Data page into a PageResponse.
+     * Converts a Spring Data page into a PageResponse.
      */
     public static <T> PageResponse<T> from(Page<T> page) {
 
-        return PageResponse.<T>builder()
+        return PageResponse
+                .<T>builder()
                 .content(page.getContent())
                 .page(page.getNumber())
                 .size(page.getSize())

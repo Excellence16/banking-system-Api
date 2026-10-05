@@ -15,8 +15,8 @@ import java.math.BigDecimal;
 
 public class TransactionRequestDTO {
 
-    @NotBlank(message = "Destination ACcountNumber is Required ")
-    private  String destinationAccountNumber;
+    @NotBlank(message = "Destination AccountNumber is Required ")
+    private String destinationAccountNumber;
 
     @DecimalMin(value = "1.00", message = "Amount must be Greater than zero")
     private BigDecimal amount;

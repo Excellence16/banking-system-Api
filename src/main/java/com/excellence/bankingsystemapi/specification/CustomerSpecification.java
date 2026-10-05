@@ -36,7 +36,7 @@ public final class CustomerSpecification {
      * Searches across multiple customer fields.
      */
     public static Specification<Customer> hasKeyword(
-            String keyword
+                    String keyword
     ) {
 
         return (root, query, cb) -> {

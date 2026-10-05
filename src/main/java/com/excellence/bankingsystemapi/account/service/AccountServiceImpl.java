@@ -12,13 +12,7 @@ import com.excellence.bankingsystemapi.common.enums.AccountStatus;
 import com.excellence.bankingsystemapi.common.enums.AccountType;
 import com.excellence.bankingsystemapi.common.enums.CustomerStatus;
 import com.excellence.bankingsystemapi.customer.repository.CustomerRepository;
-import com.excellence.bankingsystemapi.exceptions.account.AccountAlreadyClosedException;
-import com.excellence.bankingsystemapi.exceptions.account.AccountNotActiveException;
-import com.excellence.bankingsystemapi.exceptions.account.AccountNotDormantException;
-import com.excellence.bankingsystemapi.exceptions.account.AccountNotFrozenException;
-import com.excellence.bankingsystemapi.exceptions.account.CustomerInactiveException;
-import com.excellence.bankingsystemapi.exceptions.account.DuplicateAccountException;
-import com.excellence.bankingsystemapi.exceptions.account.InsufficientBalanceException;
+import com.excellence.bankingsystemapi.exceptions.account.*;
 import com.excellence.bankingsystemapi.exceptions.global.ResourceNotFoundException;
 import com.excellence.bankingsystemapi.model.Account;
 import com.excellence.bankingsystemapi.model.Customer;
@@ -55,74 +49,52 @@ public class AccountServiceImpl implements AccountService {
     private final AccountNumberGenerator accountNumberGenerator;
 
 
-
     //===========================================================
     // CREATE ACCOUNT
     //===========================================================
 
     @Override
     @Transactional
-    public AccountResponseDTO createAccount(
-            CreateAccountRequestDTO requestDTO) {
+    public AccountResponseDTO createAccount(CreateAccountRequestDTO requestDTO) {
 
 
-        log.info(
-                "Creating account for customer {}",
-                requestDTO.getCustomerNumber()
-        );
+        log.info("Creating account for customer {}",
+                requestDTO.getCustomerNumber());
 
 
-        Customer customer =
-                getCustomer(requestDTO.getCustomerNumber());
+        Customer customer = getCustomer(requestDTO.getCustomerNumber());
 
 
         validateCustomerIsActive(customer);
 
 
-        if(accountAlreadyExists(
-                customer,
-                requestDTO.getAccountType())) {
+        if (accountAlreadyExists(customer, requestDTO.getAccountType())) {
 
 
-            log.warn(
-                    "Customer {} already owns account type {}",
+            log.warn("Customer {} already owns account type {}",
                     customer.getCustomerNumber(),
-                    requestDTO.getAccountType()
-            );
+                    requestDTO.getAccountType());
 
 
             throw new DuplicateAccountException();
         }
 
 
-
-        String accountNumber =
-                generateUniqueAccountNumber();
+        String accountNumber = generateUniqueAccountNumber();
 
 
-
-        Account account =
-                buildAccount(
-                        accountNumber,
-                        customer,
-                        requestDTO
-                );
+        Account account = buildAccount(accountNumber, customer, requestDTO);
 
 
-        Account savedAccount =
-                accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
 
 
-
-        log.info(
-                "Account {} created successfully",
-                savedAccount.getAccountNumber()
-        );
+        log.info("Account {} created successfully",
+                savedAccount.getAccountNumber());
 
 
         return accountMapper.toResponse(savedAccount);
     }
-
 
 
     //===========================================================
@@ -131,55 +103,42 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public AccountResponseDTO getAccountByAccountNumber(
-            String accountNumber) {
+    public AccountResponseDTO getAccountByAccountNumber(String accountNumber) {
 
 
-        Account account =
-                getAccount(accountNumber);
+        Account account = getAccount(accountNumber);
 
 
         return accountMapper.toResponse(account);
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
-    public List<AccountSummaryResponseDTO>
-    getAccountsByCustomerNumber(String customerNumber) {
+    public List<AccountSummaryResponseDTO> getAccountsByCustomerNumber(String customerNumber) {
 
 
-        Customer customer =
-                getCustomer(customerNumber);
+        Customer customer = getCustomer(customerNumber);
 
 
-        List<Account> accounts =
-                accountRepository
-                        .findByCustomerAndDeletedFalse(customer);
+        List<Account> accounts = accountRepository.findByCustomerAndDeletedFalse(
+                customer);
 
 
-
-        return accounts.stream()
-                .map(accountMapper::toSummaryResponse)
-                .toList();
+        return accounts.stream().map(accountMapper::toSummaryResponse).toList();
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
-    public AccountBalanceResponseDTO getAccountBalance(
-            String accountNumber) {
+    public AccountBalanceResponseDTO getAccountBalance(String accountNumber) {
 
 
-        Account account =
-                getAccount(accountNumber);
+        Account account = getAccount(accountNumber);
 
 
         return accountMapper.toBalanceResponse(account);
     }
-
 
 
     //===========================================================
@@ -189,40 +148,27 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountResponseDTO updateAccount(
-            String accountNumber,
+    public AccountResponseDTO updateAccount(String accountNumber,
             UpdateAccountRequestDTO requestDTO) {
 
 
-        Account account =
-                getAccount(accountNumber);
-
+        Account account = getAccount(accountNumber);
 
 
         validateAccountIsNotClosed(account);
 
 
-
-        account.setAccountName(
-                requestDTO.getAccountName()
-        );
+        account.setAccountName(requestDTO.getAccountName());
 
 
-
-        Account updatedAccount =
-                accountRepository.save(account);
+        Account updatedAccount = accountRepository.save(account);
 
 
-
-        log.info(
-                "Account {} updated successfully",
-                accountNumber
-        );
+        log.info("Account {} updated successfully", accountNumber);
 
 
         return accountMapper.toResponse(updatedAccount);
     }
-
 
 
     //===========================================================
@@ -235,33 +181,23 @@ public class AccountServiceImpl implements AccountService {
     public void closeAccount(String accountNumber) {
 
 
-        Account account =
-                getAccount(accountNumber);
-
+        Account account = getAccount(accountNumber);
 
 
         validateAccountIsNotClosed(account);
 
 
-
         validateZeroLedgerBalance(account);
-
 
 
         close(account);
 
 
-
         accountRepository.save(account);
 
 
-
-        log.info(
-                "Account {} closed successfully",
-                accountNumber
-        );
+        log.info("Account {} closed successfully", accountNumber);
     }
-
 
 
     //===========================================================
@@ -274,29 +210,20 @@ public class AccountServiceImpl implements AccountService {
     public void freezeAccount(String accountNumber) {
 
 
-        Account account =
-                getAccount(accountNumber);
-
+        Account account = getAccount(accountNumber);
 
 
         validateAccountIsActive(account);
 
 
-
         account.setStatus(AccountStatus.FROZEN);
-
 
 
         accountRepository.save(account);
 
 
-
-        log.info(
-                "Account {} frozen",
-                accountNumber
-        );
+        log.info("Account {} frozen", accountNumber);
     }
-
 
 
     @Override
@@ -304,56 +231,40 @@ public class AccountServiceImpl implements AccountService {
     public void unfreezeAccount(String accountNumber) {
 
 
-        Account account =
-                getAccount(accountNumber);
-
+        Account account = getAccount(accountNumber);
 
 
         validateAccountIsFrozen(account);
 
 
-
         account.setStatus(AccountStatus.ACTIVE);
-
 
 
         accountRepository.save(account);
 
 
-
-        log.info(
-                "Account {} unfrozen",
-                accountNumber
-        );
+        log.info("Account {} unfrozen", accountNumber);
     }
+
     @Override
     @Transactional
     public void markAccountDormant(String accountNumber) {
 
 
-        Account account =
-                getAccount(accountNumber);
-
+        Account account = getAccount(accountNumber);
 
 
         validateAccountIsActive(account);
 
 
-
         account.setStatus(AccountStatus.DORMANT);
-
 
 
         accountRepository.save(account);
 
 
-
-        log.info(
-                "Account {} marked as dormant",
-                accountNumber
-        );
+        log.info("Account {} marked as dormant", accountNumber);
     }
-
 
 
     @Override
@@ -361,30 +272,20 @@ public class AccountServiceImpl implements AccountService {
     public void reactivateAccount(String accountNumber) {
 
 
-        Account account =
-                getAccount(accountNumber);
-
+        Account account = getAccount(accountNumber);
 
 
         validateAccountIsDormant(account);
 
 
-
         account.setStatus(AccountStatus.ACTIVE);
-
 
 
         accountRepository.save(account);
 
 
-
-        log.info(
-                "Account {} reactivated successfully",
-                accountNumber
-        );
+        log.info("Account {} reactivated successfully", accountNumber);
     }
-
-
 
 
     //===========================================================
@@ -398,27 +299,18 @@ public class AccountServiceImpl implements AccountService {
             AccountSearchRequestDTO requestDTO) {
 
 
-        Sort sort =
-                Sort.by(
-                        Sort.Direction.fromString(
-                                requestDTO.getSortDirection().name()
-                        ),
-                        requestDTO.getSortBy()
-                );
+        Sort sort = Sort.by(Sort.Direction.fromString(requestDTO
+                .getSortDirection()
+                .name()), requestDTO.getSortBy());
 
 
-        Pageable pageable =
-                PageRequest.of(
-                        requestDTO.getPage(),
-                        requestDTO.getSize(),
-                        sort
-                );
+        Pageable pageable = PageRequest.of(requestDTO.getPage(),
+                requestDTO.getSize(),
+                sort);
 
 
-
-        Specification<Account> specification =
-                AccountSpecification.build(requestDTO);
-
+        Specification<Account> specification = AccountSpecification.build(
+                requestDTO);
 
 
         return accountRepository
@@ -427,13 +319,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-
-
-
     //===========================================================
     // PRIVATE HELPER METHODS
     //===========================================================
-
 
 
     /**
@@ -447,20 +335,13 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> {
 
 
-                    log.warn(
-                            "Customer {} not found",
-                            customerNumber
-                    );
+                    log.warn("Customer {} not found", customerNumber);
 
 
                     return new ResourceNotFoundException(
-                            "Customer not found with customer number: "
-                                    + customerNumber
-                    );
+                            "Customer not found with customer number: " + customerNumber);
                 });
     }
-
-
 
 
     /**
@@ -469,13 +350,11 @@ public class AccountServiceImpl implements AccountService {
     private void validateCustomerIsActive(Customer customer) {
 
 
-        if(customer.getStatus() != CustomerStatus.ACTIVE) {
+        if (customer.getStatus() != CustomerStatus.ACTIVE) {
 
 
-            log.warn(
-                    "Inactive customer {} attempted account creation",
-                    customer.getCustomerNumber()
-            );
+            log.warn("Inactive customer {} attempted account creation",
+                    customer.getCustomerNumber());
 
 
             throw new CustomerInactiveException();
@@ -483,26 +362,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-
-
-
     /**
      * Checks duplicate account type.
      */
-    private boolean accountAlreadyExists(
-            Customer customer,
+    private boolean accountAlreadyExists(Customer customer,
             AccountType accountType) {
 
 
-        return accountRepository
-                .existsByCustomerAndAccountType(
-                        customer,
-                        accountType
-                );
+        return accountRepository.existsByCustomerAndAccountType(customer,
+                accountType);
     }
-
-
-
 
 
     /**
@@ -511,28 +380,24 @@ public class AccountServiceImpl implements AccountService {
     private String generateUniqueAccountNumber() {
 
 
-        return UniqueCodeGenerator.generateUnique(
-                accountNumberGenerator::generate,
-                accountRepository::existsByAccountNumber
-        );
+        return UniqueCodeGenerator.generateUnique(accountNumberGenerator::generate,
+                accountRepository::existsByAccountNumber);
     }
-
-
-
 
 
     /**
      * Builds Account entity.
      */
-    private Account buildAccount(
-            String accountNumber,
+    private Account buildAccount(String accountNumber,
             Customer customer,
             CreateAccountRequestDTO requestDTO) {
 
 
-        return Account.builder()
+        return Account
+                .builder()
                 .accountNumber(accountNumber)
                 .customer(customer)
+                .accountName(customer.getFirstName() + " " + customer.getMiddleName() + " " + customer.getLastName())
                 .accountType(requestDTO.getAccountType())
                 .currency(requestDTO.getCurrency())
                 .status(AccountStatus.ACTIVE)
@@ -540,10 +405,6 @@ public class AccountServiceImpl implements AccountService {
                 .availableBalance(BigDecimal.ZERO)
                 .build();
     }
-
-
-
-
 
 
     /**
@@ -557,21 +418,13 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> {
 
 
-                    log.warn(
-                            "Account {} not found",
-                            accountNumber
-                    );
+                    log.warn("Account {} not found", accountNumber);
 
 
                     return new ResourceNotFoundException(
-                            "Account not found with account number: "
-                                    + accountNumber
-                    );
+                            "Account not found with account number: " + accountNumber);
                 });
     }
-
-
-
 
 
     /**
@@ -580,24 +433,17 @@ public class AccountServiceImpl implements AccountService {
     private void validateAccountIsNotClosed(Account account) {
 
 
-        if(account.getStatus() == AccountStatus.CLOSED) {
+        if (account.getStatus() == AccountStatus.CLOSED) {
 
 
-            log.warn(
-                    "Operation attempted on closed account {}",
-                    account.getAccountNumber()
-            );
+            log.warn("Operation attempted on closed account {}",
+                    account.getAccountNumber());
 
 
             // line 592, inside validateAccountIsNotClosed
-            throw new AccountAlreadyClosedException(
-                    "Account " + account.getAccountNumber() + " is already closed."
-            );
+            throw new AccountAlreadyClosedException("Account " + account.getAccountNumber() + " is already closed.");
         }
     }
-
-
-
 
 
     /**
@@ -606,27 +452,18 @@ public class AccountServiceImpl implements AccountService {
     private void validateZeroLedgerBalance(Account account) {
 
 
-        if(account.getLedgerBalance()
-                .compareTo(BigDecimal.ZERO) != 0) {
+        if (account.getLedgerBalance().compareTo(BigDecimal.ZERO) != 0) {
 
 
-            log.warn(
-                    "Account {} cannot close because balance is {}",
+            log.warn("Account {} cannot close because balance is {}",
                     account.getAccountNumber(),
-                    account.getLedgerBalance()
-            );
+                    account.getLedgerBalance());
 
 
             // line 617, inside validateZeroLedgerBalance
-            throw new InsufficientBalanceException(
-                    "Account " + account.getAccountNumber() + " cannot be closed because balance is "
-                            + account.getLedgerBalance()
-            );
+            throw new InsufficientBalanceException("Account " + account.getAccountNumber() + " cannot be closed because balance is " + account.getLedgerBalance());
         }
     }
-
-
-
 
 
     /**
@@ -641,30 +478,21 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-
-
-
     /**
      * Ensures account is active.
      */
     private void validateAccountIsActive(Account account) {
 
 
-        if(account.getStatus() != AccountStatus.ACTIVE) {
+        if (account.getStatus() != AccountStatus.ACTIVE) {
 
 
-            log.warn(
-                    "Account {} is not active",
-                    account.getAccountNumber()
-            );
+            log.warn("Account {} is not active", account.getAccountNumber());
 
 
             throw new AccountNotActiveException();
         }
     }
-
-
-
 
 
     /**
@@ -673,21 +501,15 @@ public class AccountServiceImpl implements AccountService {
     private void validateAccountIsFrozen(Account account) {
 
 
-        if(account.getStatus() != AccountStatus.FROZEN) {
+        if (account.getStatus() != AccountStatus.FROZEN) {
 
 
-            log.warn(
-                    "Account {} is not frozen",
-                    account.getAccountNumber()
-            );
+            log.warn("Account {} is not frozen", account.getAccountNumber());
 
 
             throw new AccountNotFrozenException();
         }
     }
-
-
-
 
 
     /**
@@ -696,13 +518,10 @@ public class AccountServiceImpl implements AccountService {
     private void validateAccountIsDormant(Account account) {
 
 
-        if(account.getStatus() != AccountStatus.DORMANT) {
+        if (account.getStatus() != AccountStatus.DORMANT) {
 
 
-            log.warn(
-                    "Account {} is not dormant",
-                    account.getAccountNumber()
-            );
+            log.warn("Account {} is not dormant", account.getAccountNumber());
 
 
             throw new AccountNotDormantException();

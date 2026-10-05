@@ -1,4 +1,4 @@
-package com.excellence.bankingsystemapi.customer.dto.response;
+package com.excellence.bankingsystemapi.common;
 
 import lombok.Builder;
 
