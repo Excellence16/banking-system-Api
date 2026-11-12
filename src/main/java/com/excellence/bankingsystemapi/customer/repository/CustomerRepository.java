@@ -9,9 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
-public interface CustomerRepository extends
-        JpaRepository<Customer, Long>,
-        JpaSpecificationExecutor<Customer> {
+public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
 
     // =========================
     // Customer Retrieval
@@ -24,7 +22,7 @@ public interface CustomerRepository extends
     Page<Customer> findAllByDeletedFalse(Specification<Customer> spec,
             Pageable pageable);
 
-    Optional<Customer> findByEmailAndDeletedFalse(String email);
+    //Optional<Customer> findByEmailAndDeletedFalse(String email);
 
     Optional<Customer> findByPhoneNumberAndDeletedFalse(String phoneNumber);
 
@@ -36,7 +34,7 @@ public interface CustomerRepository extends
 
     boolean existsByCustomerNumber(String customerNumber);
 
-    boolean existsByEmailAndDeletedFalse(String email);
+    //boolean existsByEmailAndDeletedFalse(String email);
 
     boolean existsByPhoneNumberAndDeletedFalse(String phoneNumber);
 
@@ -49,21 +47,12 @@ public interface CustomerRepository extends
     // Ignore the current customer
     // =========================
 
-    boolean existsByEmail(
-            String email,
-            Long id
-    );
 
-    boolean existsByPhoneNumber(
-            String phoneNumber,
-            Long id
-    );
+    boolean existsByPhoneNumber(String phoneNumber, Long id);
 
-    boolean existsByBvnAndIdNotAndDeletedFalse(
-            String bvn,
-            Long id
-    );
+    boolean existsByBvnAndIdNotAndDeletedFalse(String bvn, Long id);
 
-    boolean existsByNationalIdAndIdNotAndDeletedFalse(String nationalId, Long id);
+    boolean existsByNationalIdAndIdNotAndDeletedFalse(String nationalId,
+            Long id);
 
 }

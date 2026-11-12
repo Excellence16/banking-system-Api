@@ -42,7 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponseDTO createCustomer(CreateCustomerRequestDTO request) {
 
-        log.info("Creating new customer with email: {}", request.getEmail());
+        //  log.info("Creating new customer with email: {}", request.getEmail());
 
         validateCreateCustomer(request);
         System.out.println("Checking National ID: " + request.getNationalId());
@@ -207,11 +207,12 @@ public class CustomerServiceImpl implements CustomerService {
             throw new DuplicateResourceException("National ID already exists.");
         }
 
+        //No LONGER IN USE !!!
+        //  if (customerRepository.existsByEmailAndDeletedFalse(request
+        //  .getEmail())) {
 
-        if (customerRepository.existsByEmailAndDeletedFalse(request.getEmail())) {
-
-            throw new DuplicateResourceException("Email already exists.");
-        }
+        // throw new DuplicateResourceException("Email already exists.");
+        //  }
 
 
         if (customerRepository.existsByPhoneNumberAndDeletedFalse(request.getPhoneNumber())) {
@@ -237,16 +238,6 @@ public class CustomerServiceImpl implements CustomerService {
      */
     private void validateUpdateCustomer(Customer customer,
             UpdateCustomerRequestDTO request) {
-
-
-        if (!customer
-                .getEmail()
-                .equalsIgnoreCase(request.getEmail()) && customerRepository.existsByEmail(
-                request.getEmail(),
-                customer.getId())) {
-
-            throw new DuplicateResourceException("Email already exists.");
-        }
 
 
         if (!customer

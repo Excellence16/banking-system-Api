@@ -19,7 +19,8 @@ public final class CustomerMapper {
      */
     public static Customer toEntity(CreateCustomerRequestDTO request) {
 
-        return Customer.builder()
+        return Customer
+                .builder()
                 .firstName(request.getFirstName())
                 .middleName(request.getMiddleName())
                 .lastName(request.getLastName())
@@ -30,7 +31,9 @@ public final class CustomerMapper {
                 .nationality(request.getNationality())
                 .residentialAddress(request.getResidentialAddress())
                 .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
+
+                // NO LONGER IN USE !!!
+                // .email(request.getEmail())
 
                 // Default values for newly created customers
                 .status(CustomerStatus.ACTIVE)
@@ -48,7 +51,8 @@ public final class CustomerMapper {
             return null;
         }
 
-        return CustomerResponseDTO.builder()
+        return CustomerResponseDTO
+                .builder()
                 .id(customer.getId())
                 .customerNumber(customer.getCustomerNumber())
                 .firstName(customer.getFirstName())
@@ -61,7 +65,10 @@ public final class CustomerMapper {
                 .nationality(customer.getNationality())
                 .residentialAddress(customer.getResidentialAddress())
                 .phoneNumber(customer.getPhoneNumber())
-                .email(customer.getEmail())
+
+                // NO LONGER IN USE !!!
+                //.email(customer.getEmail())
+
                 .status(customer.getStatus())
                 .kycLevel(customer.getKycLevel())
                 .createdAt(customer.getCreatedAt())
@@ -74,18 +81,21 @@ public final class CustomerMapper {
      */
     public static CustomerSummaryResponseDTO toSummary(Customer customer) {
 
-            if (customer == null) {
-                return null;
-            }
+        if (customer == null) {
+            return null;
+        }
 
-            return CustomerSummaryResponseDTO.builder()
-                    .customerNumber(customer.getCustomerNumber())
-                    .firstName(customer.getFirstName())
-                    .lastName(customer.getLastName())
-                    .phoneNumber(customer.getPhoneNumber())
-                    .email(customer.getEmail())
-                    .status(customer.getStatus())
-                    .build();
+        return CustomerSummaryResponseDTO
+                .builder()
+                .customerNumber(customer.getCustomerNumber())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .phoneNumber(customer.getPhoneNumber())
+
+                // NO LONGER IN USE !!!
+                //  .email(customer.getEmail())
+                .status(customer.getStatus())
+                .build();
 
     }
 
@@ -93,11 +103,14 @@ public final class CustomerMapper {
      * Updates mutable customer fields only.
      */
     public static void updateCustomerFromDto(UpdateCustomerRequestDTO request,
-                                             Customer customer) {
+            Customer customer) {
 
         customer.setResidentialAddress(request.getResidentialAddress());
         customer.setPhoneNumber(request.getPhoneNumber());
-        customer.setEmail(request.getEmail());
+
+        // NO LONGER IN USE !!!
+
+        // customer.setEmail(request.getEmail());
     }
 
     /**
@@ -113,8 +126,7 @@ public final class CustomerMapper {
             return "*".repeat(value.length());
         }
 
-        return "*".repeat(value.length() - 4)
-                + value.substring(value.length() - 4);
+        return "*".repeat(value.length() - 4) + value.substring(value.length() - 4);
     }
 
     /**
@@ -126,15 +138,14 @@ public final class CustomerMapper {
 
         fullName.append(customer.getFirstName());
 
-        if (customer.getMiddleName() != null &&
-                !customer.getMiddleName().isBlank()) {
+        if (customer.getMiddleName() != null && !customer
+                .getMiddleName()
+                .isBlank()) {
 
-            fullName.append(" ")
-                    .append(customer.getMiddleName());
+            fullName.append(" ").append(customer.getMiddleName());
         }
 
-        fullName.append(" ")
-                .append(customer.getLastName());
+        fullName.append(" ").append(customer.getLastName());
 
         return fullName.toString().trim();
     }

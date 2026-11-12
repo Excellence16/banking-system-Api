@@ -3,6 +3,7 @@ package com.excellence.bankingsystemapi.model;
 import com.excellence.bankingsystemapi.common.enums.CustomerStatus;
 import com.excellence.bankingsystemapi.common.enums.Gender;
 import com.excellence.bankingsystemapi.common.enums.KycLevel;
+import com.excellence.bankingsystemapi.security.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,17 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        name = "customers",
-        indexes = {
-                @Index(name = "idx_customer_bvn", columnList = "bvn"),
-                @Index(name = "idx_customer_email", columnList = "email"),
-                @Index(name = "idx_customer_phone", columnList = "phone_number"),
-                @Index(name = "idx_customer_number", columnList = "customer_number"),
-                @Index(name = "idx_customer_status", columnList = "status"),
-                @Index(name = "idx_customer_created_at", columnList = "created_at")
-        }
-)
+@Table(name = "customers", indexes = {@Index(name = "idx_customer_bvn", columnList = "bvn"), @Index(name = "idx_customer_email", columnList = "email"), @Index(name = "idx_customer_phone", columnList = "phone_number"), @Index(name = "idx_customer_number", columnList = "customer_number"), @Index(name = "idx_customer_status", columnList = "status"), @Index(name = "idx_customer_created_at", columnList = "created_at")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,7 +25,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, updatable = false,length = 20)
+    @Column(nullable = false, unique = true, updatable = false, length = 20)
     private String customerNumber;
 
     @Column(nullable = false, length = 100)
@@ -65,11 +56,15 @@ public class Customer {
     @Column(nullable = false, length = 300)
     private String residentialAddress;
 
-    @Column(name="phone_number", nullable = false, unique = true, length = 20)
+    @Column(name = "phone_number", nullable = false, unique = true, length = 20)
     private String phoneNumber;
 
-    @Column(nullable = false, unique = true, length = 150)
-    private String email;
+
+    //NO LONGER IN USE !!!
+
+    // @Column(nullable = false, unique = true, length = 150)
+    // private String email;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -82,19 +77,23 @@ public class Customer {
     @Builder.Default
     private CustomerStatus status = CustomerStatus.ACTIVE;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = false)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Account> accounts = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at",nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     //soft delete flag
     @Builder.Default
-    @Column(nullable  = false)
+    @Column(nullable = false)
     private Boolean deleted = false;
 
 
@@ -106,7 +105,7 @@ public class Customer {
         createdAt = now;
         updatedAt = now;
 
-        if(deleted == null){
+        if (deleted == null) {
             deleted = false;
         }
 
@@ -116,9 +115,6 @@ public class Customer {
     private void preUpdate() {
 
         updatedAt = LocalDateTime.now();
-
-
-
 
 
     }

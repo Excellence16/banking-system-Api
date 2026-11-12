@@ -48,16 +48,17 @@ public class CreateCustomerRequestDTO {
     private String residentialAddress;
 
     @NotBlank(message = "Phone number is required.")
-    @Pattern(
-            regexp = "^(\\+234|0)[789][01]\\d{8}$",
-            message = "Please provide a valid Nigerian phone number."
-    )
+    @Pattern(regexp = "^(\\+234|0)[789][01]\\d{8}$", message = "Please provide a valid Nigerian phone number.")
     private String phoneNumber;
 
-    @NotBlank(message = "Email address is required.")
-    @Email(message = "Please provide a valid email address.")
-    @Size(max = 150, message = "Email address must not exceed 150 characters.")
-    private String email;
+
+    //NO LONGER IN USE
+
+    // @NotBlank(message = "Email address is required.")
+    // @Email(message = "Please provide a valid email address.")
+    // @Size(max = 150, message = "Email address must not exceed 150
+    // characters.")
+    // private String email;
 
 }
 
